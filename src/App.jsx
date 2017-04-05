@@ -11,7 +11,8 @@ export default class App extends Component {
     this.state = {
       currentUser: {name: "Bob"},
       messages: [],
-      notification: ""
+      notification: "",
+      numberOfOnlineUsers: 0
     };
     this.ws = new WebSocket('ws://0.0.0.0:3001');
   }
@@ -41,6 +42,9 @@ export default class App extends Component {
         case "incomingNotification":
           this.setState({notification: newMessage.content});
           break;
+        case "numberOfOnlineUsers":
+          this.setState({numberOfOnlineUsers: newMessage.content});
+          break;
         default:
           throw new Error("Unknown type :" + newMessage.type);
       }
@@ -50,7 +54,10 @@ export default class App extends Component {
   render() {
     return (
       <div>
-        <nav className="navbar"><a href="/" className="navbar-brand">Chatty</a></nav>
+        <nav className="navbar">
+          <a href="/" className="navbar-brand">Chatty</a>
+          <span className="numberOfUsers">{this.state.numberOfOnlineUsers} user(s) online</span>
+        </nav>
         <MessageList messages={this.state.messages} notification={this.state.notification} />
         <ChatBar sendMessage={this.handleSendMessage} currentUser={this.state.currentUser} />
       </div>

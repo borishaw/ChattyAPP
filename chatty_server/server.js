@@ -18,30 +18,40 @@ const wss = new SocketServer({ server });
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 
+wss.broadcast =  (data, ws) => {
+  wss.clients.forEach(function each(client) {
+    if (client.readyState === ws.OPEN) {
+      client.send(data);
+    }
+  });
+};
+
+wss.numberOfOnlineUsers = 0;
 
 wss.on('connection', (ws) => {
-  console.log('Client connected');
-  wss.broadcast =  (data) => {
-    wss.clients.forEach(function each(client) {
-      if (client.readyState === ws.OPEN) {
-        client.send(data);
-      }
-    });
+
+  wss.numberOfOnlineUsers++;
+  const numberOfOnlineUsers = {
+    type: "numberOfOnlineUsers",
+    content: wss.numberOfOnlineUsers
   };
+  wss.broadcast(JSON.stringify(numberOfOnlineUsers), ws);
+
+  console.log('Client connected');
   ws.on('message',  (message) => {
     const newMessage = JSON.parse(message);
     switch (newMessage.type) {
       case "postMessage":
         newMessage.id = uuid();
         newMessage.type = "incomingMessage";
-        wss.broadcast(JSON.stringify(newMessage));
+        wss.broadcast(JSON.stringify(newMessage) ,ws);
         break;
       case "postNotification":
         const newNotification = {
           type: "incomingNotification",
           content: newMessage.content
         };
-        wss.broadcast(JSON.stringify(newNotification));
+        wss.broadcast(JSON.stringify(newNotification), ws);
         break;
       default:
         throw new Error("Unknown Type: " + newMessage.type);
@@ -49,5 +59,15 @@ wss.on('connection', (ws) => {
   });
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  ws.on('close', () => console.log('Client disconnected'));
+  ws.on('close', () => {
+
+    wss.numberOfOnlineUsers--;
+    const numberOfOnlineUsers = {
+      type: "numberOfOnlineUsers",
+      content: wss.numberOfOnlineUsers
+    };
+    wss.broadcast(JSON.stringify(numberOfOnlineUsers), ws);
+
+    console.log('Client disconnected')
+  });
 });

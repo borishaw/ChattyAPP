@@ -65,6 +65,8 @@ body {
   position: fixed;
   right: 0;
   top: 0; }
+  .navbar .numberOfUsers {
+    float: right; }
 
 .navbar-brand {
   color: inherit;
