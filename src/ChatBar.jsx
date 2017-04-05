@@ -5,7 +5,7 @@ export default class ChatBar extends Component {
   constructor(props){
     super(props);
     this.state = {
-      username: '',
+      username: this.props.currentUser.name,
       content: ''
     };
   }
@@ -20,14 +20,13 @@ export default class ChatBar extends Component {
 
   handelKeyPress = (e) => {
     if (e.key === 'Enter'){
-      this.props.insertMessage(this.state);
+      this.props.sendMessage(this.state);
       this.setState({content:''});
     }
   };
 
 
   render() {
-    //console.log("Rendering Chatbar");
     return (
       <footer className="chatbar">
 
@@ -42,7 +41,6 @@ export default class ChatBar extends Component {
                onKeyPress={this.handelKeyPress}
                placeholder="Type a message and hit enter"
                />
-
       </footer>
     );
   }
