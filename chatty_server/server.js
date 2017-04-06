@@ -1,6 +1,7 @@
 const express = require('express');
 const SocketServer = require('ws').Server;
 const uuid = require('uuid/v1');
+const randomColor = require('randomcolor');
 
 // Set the port to 3001
 const PORT = 3001;
@@ -12,7 +13,10 @@ const server = express()
   .listen(PORT, '0.0.0.0', 'localhost', () => console.log(`Listening on ${ PORT }`));
 
 // Create the WebSockets server
-const wss = new SocketServer({ server });
+const wss = new SocketServer({
+  server: server,
+  clientTracking: true
+});
 
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
@@ -26,19 +30,24 @@ wss.broadcast =  (data, ws) => {
   });
 };
 
-wss.numberOfOnlineUsers = 0;
-
 wss.on('connection', (ws) => {
 
-  wss.numberOfOnlineUsers++;
+  ws.userNameColor = randomColor();
+
   const numberOfOnlineUsers = {
     type: "numberOfOnlineUsers",
-    content: wss.numberOfOnlineUsers
+    content: wss.clients.size
   };
   wss.broadcast(JSON.stringify(numberOfOnlineUsers), ws);
 
+  ws.send(JSON.stringify({
+    type: "userColor",
+    content: randomColor()
+  }));
+
   console.log('Client connected');
   ws.on('message',  (message) => {
+    console.log(message);
     const newMessage = JSON.parse(message);
     switch (newMessage.type) {
       case "postMessage":
@@ -61,10 +70,9 @@ wss.on('connection', (ws) => {
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('close', () => {
 
-    wss.numberOfOnlineUsers--;
     const numberOfOnlineUsers = {
       type: "numberOfOnlineUsers",
-      content: wss.numberOfOnlineUsers
+      content: wss.clients.size
     };
     wss.broadcast(JSON.stringify(numberOfOnlineUsers), ws);
 
