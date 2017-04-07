@@ -14,11 +14,6 @@ export default class App extends Component {
       numberOfOnlineUsers: 0
     };
     this.ws = new WebSocket('ws://0.0.0.0:3001');
-
-    this.wrapImg = (str) => {
-      let stringArray = str.split(" ");
-      let imgUrlRegEx = new RegExp("/\.(gif|jpg|jpeg|tiff|png)$/i");
-    }
   }
 
   handleSendMessage = (newMessage) => {
