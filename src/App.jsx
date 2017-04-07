@@ -13,7 +13,8 @@ export default class App extends Component {
       notification: "",
       numberOfOnlineUsers: 0
     };
-    this.ws = new WebSocket('ws://0.0.0.0:3001');
+    // this.ws = new WebSocket('ws://0.0.0.0:3001');
+    this.ws = new WebSocket('ws://frozen-peak-80952.herokuapp.com');
   }
 
   handleSendMessage = (newMessage) => {
