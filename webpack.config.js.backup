@@ -4,7 +4,7 @@ var webpack = require('webpack');
 module.exports = {
   devtool: 'eval',
   entry: [
-    'webpack-dev-server/client?https://shrouded-woodland-78952.herokuapp.com',
+    'webpack-dev-server/client?http://localhost:3000',
     './src/index.jsx'
   ],
   output: {
