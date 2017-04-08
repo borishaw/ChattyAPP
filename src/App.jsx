@@ -14,7 +14,7 @@ export default class App extends Component {
       numberOfOnlineUsers: 0
     };
     // this.ws = new WebSocket('ws://0.0.0.0:3001');
-    this.ws = new WebSocket('ws://frozen-peak-80952.herokuapp.com');
+    this.ws = new WebSocket('wss://frozen-peak-80952.herokuapp.com');
   }
 
   handleSendMessage = (newMessage) => {
